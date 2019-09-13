@@ -12,6 +12,7 @@ const corsConfigOptions = require('./mains/common/config/cors.config');
 require('events').EventEmitter.defaultMaxListeners = Infinity;
 
 //Routers
+const UserRoutes = require('./mains/users/routes.config');
 
 
 app.use(cors(corsConfigOptions));
@@ -19,6 +20,15 @@ app.use(bodyParser.json());
 app.use(compression());
 app.use(helmet());
 app.use(morgan('dev'));
+
+
+
+UserRoutes.routesConfig(app);
+
+app.use(function(err, req, res, next) {
+    console.log(err);
+    res.status(err.statusCode || 500).send(err);
+});
 
 if (config.environment === 'prod') {
 

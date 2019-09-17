@@ -26,8 +26,12 @@ app.use(morgan('dev'));
 UserRoutes.routesConfig(app);
 
 app.use(function(err, req, res, next) {
-    console.log(err);
-    res.status(err.statusCode || 500).send(err);
+    let payload = {
+        message: err.message,
+        details: err.details,
+        status: err.status
+    }
+    res.status(err.statusCode || 500).send(payload);
 });
 
 if (config.environment === 'prod') {

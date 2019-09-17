@@ -7,12 +7,12 @@ exports.isUserAlreadyRegisterd = (req, res, next) => {
     UserModel.findByEmail(req.body.Email)
         .then((user)=>{
             if(user[0]){
-                throw new UnAcceptableError(ErrorMessage.UserExists);
+                next(new UnAcceptableError(ErrorMessage.UserExists));
             } else {
                 return next();
             }
         }).catch(reason => {
-            console.log(reason);
-            throw new ServerError(ErrorMessage.ServerProblem, reason);
+            console.log(reason.message);
+            next(new ServerError(ErrorMessage.ServerProblem, reason));
         });
 }

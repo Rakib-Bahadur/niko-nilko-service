@@ -7,8 +7,14 @@ module.exports = {
     allowedOrigins: [],
 
     // Environment
-    "environment": process.env.NODE_ENV || "development",
+    environment: process.env.NODE_ENV || "development",
 
     // Database Config
-    "AppDBConnectionString": "mongodb://localhost/niko-niko",
+    AppDBConnectionString: "mongodb://localhost/niko-niko",
+
+    // Permission Levels
+    permissionLevel: {
+        ADMIN: 5,
+        USER: 4
+    }
 }

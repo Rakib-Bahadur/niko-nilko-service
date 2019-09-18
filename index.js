@@ -13,6 +13,7 @@ require('events').EventEmitter.defaultMaxListeners = Infinity;
 
 //Routers
 const UserRoutes = require('./mains/users/routes.config');
+const EntryRoutes = require('./mains/entries/routes.config');
 
 
 app.use(cors(corsConfigOptions));
@@ -24,6 +25,7 @@ app.use(morgan('dev'));
 
 
 UserRoutes.routesConfig(app);
+EntryRoutes.routesConfig(app);
 
 app.use(function(err, req, res, next) {
     let payload = {

@@ -1,15 +1,15 @@
-const UserModel = require('../model/user.model');
-const crypto = require('crypto');
+const ProjectModel = require('../model/project.model');
+const moment = require('moment');
 const Response = require('../../common/models/response.success.model');
 const ResponseList = require('../../common/models/response.list.success.model');
 const ServerError = require('../../common/models/error.server.error.model');
 const ErrorMessage = require('../../common/config/error.message.config');
 
 exports.insert = (req, res) => {
-    let salt = crypto.randomBytes(16).toString('base64');
-    let hash = crypto.createHmac('sha512', salt).update(req.body.Password).digest("base64");
-    req.body.Password = salt + "$" + hash;
-    UserModel.createUser(req.body)
+    req.body.createTime = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss');
+    req.body.updateTime = req.body.createTime;
+    req.body.createdBy = req.userInfo.id;
+    ProjectModel.createProject(req.body)
         .then((result) => {
             res.status(201).send(new Response(result));
         }).catch(reason => {
@@ -27,7 +27,7 @@ exports.list = (req, res) => {
             page = Number.isInteger(req.query.page) ? req.query.page : 0;
         }
     }
-    UserModel.list(limit, page)
+    ProjectModel.list(limit, page)
         .then((result) => {
             res.send(new ResponseList(result));
         }).catch(reason => {
@@ -37,7 +37,7 @@ exports.list = (req, res) => {
 };
 
 exports.getById = (req, res) => {
-    UserModel.findById(req.params.userId)
+    ProjectModel.findById(req.params.projectId)
         .then((result) => {
             res.send(new Response(result));
         }).catch(reason => {
@@ -46,13 +46,8 @@ exports.getById = (req, res) => {
         });
 };
 exports.patchById = (req, res) => {
-    if (req.body.Password) {
-        let salt = crypto.randomBytes(16).toString('base64');
-        let hash = crypto.createHmac('sha512', salt).update(req.body.Password).digest("base64");
-        req.body.Password = salt + "$" + hash;
-    }
-
-    UserModel.patchUser(req.params.userId, req.body)
+    req.body.updateTime = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss');
+    ProjectModel.patchEntry(req.params.projectId, req.body)
         .then((result) => {
             res.status(204).send(new Response());
         }).catch(reason => {
@@ -63,7 +58,7 @@ exports.patchById = (req, res) => {
 };
 
 exports.removeById = (req, res) => {
-    UserModel.removeById(req.params.userId)
+    ProjectModel.removeById(req.params.projectId)
         .then((result)=>{
             res.status(204).send(new Response());
         }).catch(reason => {

@@ -17,7 +17,7 @@ exports.validateRequestparams = (args, optionals) => {
         }
         if(missingFields.length > 0) {
             let details = missingFields.join(', ');
-            if(missingOptionalFields > 0) details += ', ' +missingOptionalFields.join(' (Optional), ')
+            if(missingOptionalFields.length > 0) details += ',    Optional: ' +missingOptionalFields.join(', ');
             throw new BadRequestError(ErrorMessage.ReqBodyFieldMissing, details);
         } else 
             return next();
@@ -41,7 +41,7 @@ exports.validateRequestBody = (args, optionals) => {
         }
         if(missingFields.length > 0){
             let details = missingFields.join(', ');
-            if(missingOptionalFields > 0) details += ', ' +missingOptionalFields.join(' (Optional), ')
+            if(missingOptionalFields.length > 0) details += ',    Optional: ' +missingOptionalFields.join(', ');
             throw new BadRequestError(ErrorMessage.ReqBodyFieldMissing, details);
         } else 
             return next();

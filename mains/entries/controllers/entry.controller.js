@@ -8,9 +8,10 @@ const ErrorMessage = require('../../common/config/error.message.config');
 exports.insert = (req, res) => {
     req.body.entryTime = moment(Date.now()).format('YYYY-MM-DD HH:mm:ss');
     req.body.updateTime = req.body.entryTime;
+    req.body.createdBy = req.userInfo.id;
     EntryModel.createEntry(req.body)
         .then((result) => {
-            res.status(201).send(new Response({result}));
+            res.status(201).send(new Response(result));
         }).catch(reason => {
             console.log(reason);
             throw new ServerError(ErrorMessage.ServerProblem, reason);

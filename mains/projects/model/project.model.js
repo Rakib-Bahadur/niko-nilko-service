@@ -6,39 +6,36 @@ const ErrorMessage = require('../../common/config/error.message.config');
 mongoose.connect(config.AppDBConnectionString, { useNewUrlParser: true , useUnifiedTopology: true });
 const Schema = mongoose.Schema;
 
-const entrySchema = new Schema({
+const projectSchema = new Schema({
+    name: String,
+    description: String,
+    members: Array,
     createdBy: String,
-    projectId: String,
-    entryState: Number,
-    entryTime: Date,
+    createTime: Date,
     updateTime: Date
 });
 
-entrySchema.virtual('id').get(function () {
+projectSchema.virtual('id').get(function () {
     return this._id.toHexString();
 });
 
 // Ensure virtual fields are serialised.
-entrySchema.set('toJSON', {
+projectSchema.set('toJSON', {
     virtuals: true
 });
 
-entrySchema.findById = function (cb) {
-    return this.model('Entry').find({id: this.id}, cb);
+projectSchema.findById = function (cb) {
+    return this.model('Project').find({id: this.id}, cb);
 };
 
-const Entry = mongoose.model('Entry', entrySchema);
+const Project = mongoose.model('Project', projectSchema);
 
 exports.findByCreatedBy = (creatorId) => {
-    return Entry.find({createdBy: creatorId});
-};
-
-exports.findByProjectId = (projectId) => {
-    return Entry.find({projectId: projectId});
+    return Project.find({createdBy: creatorId});
 };
 
 exports.findById = (id) => {
-    return Entry.findById(id)
+    return Project.findById(id)
         .then((result) => {
             result = result.toJSON();
             delete result._id;
@@ -50,45 +47,45 @@ exports.findById = (id) => {
         });;
 };
 
-exports.createEntry = (entryData) => {
-    const entry = new Entry(entryData);
-    return entry.save();
+exports.createProject = (projectData) => {
+    const project = new Project(projectData);
+    return project.save();
 };
 
 exports.list = (perPage, page) => {
     return new Promise((resolve, reject) => {
-        Entry.find()
+        Project.find()
             .limit(perPage)
             .skip(perPage * page)
-            .exec(function (err, entries) {
+            .exec(function (err, projects) {
                 if (err) {
                     reject(err);
                 } else {
-                    resolve(entries);
+                    resolve(projects);
                 }
             })
     });
 };
 
-exports.patchEntry = (id, entryData) => {
+exports.patchProject = (id, projectData) => {
     return new Promise((resolve, reject) => {
-        Entry.findById(id, function (err, entry) {
+        Project.findById(id, function (err, project) {
             if (err) reject(err);
-            for (let i in entryData) {
-                entry[i] = entryData[i];
+            for (let i in projectData) {
+                project[i] = projectData[i];
             }
-            entry.save(function (err, updatedEntry) {
+            project.save(function (err, updatedProject) {
                 if (err) return reject(err);
-                resolve(updatedEntry);
+                resolve(updatedProject);
             });
         });
     })
 
 };
 
-exports.removeById = (entryId) => {
+exports.removeById = (projectId) => {
     return new Promise((resolve, reject) => {
-        Entry.remove({_id: entryId}, (err) => {
+        Project.remove({_id: projectId}, (err) => {
             if (err) {
                 reject(err);
             } else {
